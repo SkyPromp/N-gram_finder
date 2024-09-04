@@ -71,7 +71,8 @@ int main(){
 
     fclose(fptr);
 
-    fptr = fopen("../output.txt", "w");
+    fptr = fopen("../output.csv", "w");
+    fprintf(fptr, "ID;BUFFER;OCCURRENCES\n");
     sortTree(&tree);
     printTree(tree, fptr);
     fclose(fptr);
@@ -179,9 +180,9 @@ void printTree(Tree* tree, FILE* fptr){
     printTree(tree->left, fptr);
 
     if(tree->id != 1){
-        fprintf(fptr, "ID: %llu | BUFF: ", tree->id);
+        fprintf(fptr, "%llu;", tree->id);
         printDeserializeBuffer(tree->id, fptr);
-        fprintf(fptr, " | VALUE: %llu\n", tree->value);
+        fprintf(fptr, ";%llu\n", tree->value);
     }
 
     printTree(tree->right, fptr);
@@ -242,7 +243,7 @@ void BSTInsert(Tree* tree, unsigned long long value, unsigned long long id){
 
 void linkedListToBST(Tree* tree, LinkedList* linkedList){
     LinkedList* last = linkedList;
-    int a = 1;
+
     while(last != NULL){
         BSTInsert(tree, last->value, last->id);
         last = last->next;
