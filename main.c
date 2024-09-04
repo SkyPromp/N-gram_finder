@@ -28,7 +28,7 @@ void printTree(Tree*);
 
 int main(){
     FILE *fptr;
-    fptr = fopen("../test.txt", "r");
+    fptr = fopen("../words.txt", "r");
 
     if (!fptr) {
         printf("File Not Found!");
@@ -140,6 +140,10 @@ void storeTree(Tree* tree, unsigned long long id){
             new_tree->left = NULL;
             new_tree->right = NULL;
             tree->right = new_tree;
+
+//            printf("right ");
+//            printDeserializeBuffer(id);
+//            putchar('\n');
         } else{
             storeTree(tree->right, id);
         }
@@ -150,7 +154,11 @@ void storeTree(Tree* tree, unsigned long long id){
             new_tree->id = id;
             new_tree->left = NULL;
             new_tree->right = NULL;
-            tree->right = new_tree;
+            tree->left = new_tree;
+
+//            printf("left ");
+//            printDeserializeBuffer(id);
+//            putchar('\n');
         } else{
             storeTree(tree->left, id);
         }
@@ -158,6 +166,8 @@ void storeTree(Tree* tree, unsigned long long id){
 }
 
 void printTree(Tree* tree){
+    if(tree == NULL) return;
+
     if(tree->id != 1){
         printf("ID: %llu | BUFF: ", tree->id);
         printDeserializeBuffer(tree->id);
