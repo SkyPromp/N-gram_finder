@@ -33,7 +33,7 @@ void freeLinkedList(LinkedList*);
 void appendToLinkedList(LinkedList**, LinkedList*);
 void treeToLinkedList(Tree*, LinkedList*);
 void BSTInsert(Tree*, unsigned long long, unsigned long long);
-void linkedListToBST(Tree*, LinkedList*);  // TODO
+void linkedListToBST(Tree*, LinkedList*);
 void sortTree(Tree**);
 void printTree(Tree*, FILE*);
 void freeTree(Tree*);
@@ -72,12 +72,7 @@ int main(){
     fclose(fptr);
 
     fptr = fopen("../output.txt", "w");
-    printTree(tree, fptr);
-    fclose(fptr);
-
-    fptr = fopen("../sorted_output.txt", "w");
     sortTree(&tree);
-    printf("tree length: %llu\n", lenTree(tree)); // LEN = 7104
     printTree(tree, fptr);
     fclose(fptr);
 
@@ -197,7 +192,7 @@ void appendToLinkedList(LinkedList** list, LinkedList* element){
     else{
         LinkedList* current = *list;
 
-        while(current->next != NULL){ // TODO BUGFIX crashes at 2nd iteration
+        while(current->next != NULL){
             current = current->next;
         }
 
@@ -219,7 +214,7 @@ void treeToLinkedList(Tree* tree, LinkedList* list){
     treeToLinkedList(tree->right, list);
 }
 
-void BSTInsert(Tree* tree, unsigned long long value, unsigned long long id){  // TODO BUGFIX VALUES DISAPPEAR (ROOT MIGHT BE OVERWRITTEN)
+void BSTInsert(Tree* tree, unsigned long long value, unsigned long long id){
     if(value > tree->value){
         if(tree->left == NULL){
             Tree* new_tree = malloc(sizeof(Tree));
@@ -245,11 +240,10 @@ void BSTInsert(Tree* tree, unsigned long long value, unsigned long long id){  //
     }
 }
 
-void linkedListToBST(Tree* tree, LinkedList* linkedList){  // TODO BUGFIX at 2063 inserts the tree gets reset somehow
+void linkedListToBST(Tree* tree, LinkedList* linkedList){
     LinkedList* last = linkedList;
     int a = 1;
     while(last != NULL){
-//        printf("%d %llu %p\n", a++, lenTree(tree), tree);
         BSTInsert(tree, last->value, last->id);
         last = last->next;
     }
@@ -268,10 +262,7 @@ void sortTree(Tree** treeptr){
     linkedList->value = 0;
     linkedList->id = 1;
 
-    printf("tree length: %llu\n", lenTree(tree));  // LEN = 9166
-
     treeToLinkedList(tree, linkedList);
-    printf("linked list length: %llu\n", lenLinkedList(linkedList));  // LEN = 9167 (+1 from root node)
     freeTree(tree);
     tree = malloc(sizeof(Tree));
     tree->id = 1;
@@ -279,9 +270,9 @@ void sortTree(Tree** treeptr){
     tree->right = NULL;
     tree->left = NULL;
     linkedListToBST(tree, linkedList);
-    printf("tree length: %llu\n", lenTree(tree)); // LEN = 7104
+
     *treeptr = tree;
-    //freeLinkedList(linkedList);
+    freeLinkedList(linkedList);
 }
 
 void freeTree(Tree* tree){
