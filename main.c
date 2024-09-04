@@ -43,6 +43,7 @@ int main(){
     buff->len = WORD_LENGTH;
     buff->cp = ngram;
     buffClear(buff);
+
     Tree t;
     Tree* tree = &t;
     tree->id = 1;
@@ -51,7 +52,6 @@ int main(){
     tree->right = NULL;
 
     while(readNext(buff, fptr)){
-//        printBuff(buff);
         unsigned long long id = serializeBuffer(buff);
         storeTree(tree, id);
     }
@@ -126,8 +126,6 @@ void printDeserializeBuffer(unsigned long long id){
         id /= 27; // integer division
         putchar(last_char);
     }
-
-    //putchar('\n');
 }
 
 void storeTree(Tree* tree, unsigned long long id){
@@ -140,10 +138,6 @@ void storeTree(Tree* tree, unsigned long long id){
             new_tree->left = NULL;
             new_tree->right = NULL;
             tree->right = new_tree;
-
-//            printf("right ");
-//            printDeserializeBuffer(id);
-//            putchar('\n');
         } else{
             storeTree(tree->right, id);
         }
@@ -155,10 +149,6 @@ void storeTree(Tree* tree, unsigned long long id){
             new_tree->left = NULL;
             new_tree->right = NULL;
             tree->left = new_tree;
-
-//            printf("left ");
-//            printDeserializeBuffer(id);
-//            putchar('\n');
         } else{
             storeTree(tree->left, id);
         }
