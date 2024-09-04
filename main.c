@@ -21,9 +21,9 @@ void buffAdd(Buffer*, char);
 int readNext(Buffer*, FILE*);
 void buffClear(Buffer*);
 unsigned long long serializeBuffer(Buffer*);  // 27 ** n + 27 ** (n - 1) ... for array lookup
-void printDeserializeBuffer(unsigned long long);
+void printDeserializeBuffer(unsigned long long, FILE*);
 void storeTree(Tree*, unsigned long long);
-void printTree(Tree*);
+void printTree(Tree*, FILE*);
 void freeTree(Tree*);
 
 
@@ -58,7 +58,10 @@ int main(){
 
     fclose(fptr);
 
-    printTree(tree);
+    fptr = fopen("../output.txt", "w");
+    printTree(tree, fptr);
+    fclose(fptr);
+
     freeTree(tree);
 
     return 0;
@@ -121,11 +124,11 @@ unsigned long long serializeBuffer(Buffer* buff){
     return value;
 }
 
-void printDeserializeBuffer(unsigned long long id){
+void printDeserializeBuffer(unsigned long long id, FILE* fptr){
     while(id > 0){
         char last_char = id % 27 - 1 + 'a';
         id /= 27; // integer division
-        putchar(last_char);
+        putc(last_char, fptr);
     }
 }
 
@@ -156,17 +159,17 @@ void storeTree(Tree* tree, unsigned long long id){
     }
 }
 
-void printTree(Tree* tree){
+void printTree(Tree* tree, FILE* fptr){
     if(tree == NULL) return;
 
     if(tree->id != 1){
-        printf("ID: %llu | BUFF: ", tree->id);
-        printDeserializeBuffer(tree->id);
-        printf(" | VALUE: %llu\n", tree->value);
+        fprintf(fptr, "ID: %llu | BUFF: ", tree->id);
+        printDeserializeBuffer(tree->id, fptr);
+        fprintf(fptr, " | VALUE: %llu\n", tree->value);
     }
 
-    if(tree->left != NULL) printTree(tree->left);
-    if(tree->right != NULL) printTree(tree->right);
+    if(tree->left != NULL) printTree(tree->left, fptr);
+    if(tree->right != NULL) printTree(tree->right, fptr);
 }
 
 void freeTree(Tree* tree){
