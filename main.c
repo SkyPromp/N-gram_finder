@@ -24,6 +24,7 @@ unsigned long long serializeBuffer(Buffer*);  // 27 ** n + 27 ** (n - 1) ... for
 void printDeserializeBuffer(unsigned long long);
 void storeTree(Tree*, unsigned long long);
 void printTree(Tree*);
+void freeTree(Tree*);
 
 
 int main(){
@@ -44,8 +45,7 @@ int main(){
     buff->cp = ngram;
     buffClear(buff);
 
-    Tree t;
-    Tree* tree = &t;
+    Tree* tree = malloc(sizeof(Tree));
     tree->id = 1;
     tree->value = 0;
     tree->left = NULL;
@@ -56,9 +56,11 @@ int main(){
         storeTree(tree, id);
     }
 
-    printTree(tree);
-
     fclose(fptr);
+
+    printTree(tree);
+    freeTree(tree);
+
     return 0;
 }
 
@@ -166,4 +168,11 @@ void printTree(Tree* tree){
 
     if(tree->left != NULL) printTree(tree->left);
     if(tree->right != NULL) printTree(tree->right);
+}
+
+void freeTree(Tree* tree){
+    if(tree == NULL) return;
+    if(tree->left != NULL) freeTree(tree->left);
+    if(tree->right != NULL) freeTree(tree->right);
+    free(tree);
 }
