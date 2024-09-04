@@ -182,12 +182,14 @@ void printTree(Tree* tree, FILE* fptr){
     if(tree == NULL) return;
 
     printTree(tree->left, fptr);
-    printTree(tree->right, fptr);
+
     if(tree->id != 1){
         fprintf(fptr, "ID: %llu | BUFF: ", tree->id);
         printDeserializeBuffer(tree->id, fptr);
         fprintf(fptr, " | VALUE: %llu\n", tree->value);
     }
+
+    printTree(tree->right, fptr);
 }
 
 void appendToLinkedList(LinkedList** list, LinkedList* element){
