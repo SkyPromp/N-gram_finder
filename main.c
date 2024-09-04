@@ -15,17 +15,30 @@ typedef struct Tree{
     struct Tree* right;
 } Tree;
 
+typedef struct LinkedList{
+    unsigned long long id;
+    unsigned long long value;
+    struct LinkedList* next;
+} LinkedList;
+
 unsigned long long pow(unsigned long long, unsigned long long);
-void printBuff(Buffer* buff);
+void printBuff(Buffer*);
 void buffAdd(Buffer*, char);
 int readNext(Buffer*, FILE*);
 void buffClear(Buffer*);
 unsigned long long serializeBuffer(Buffer*);  // 27 ** n + 27 ** (n - 1) ... for array lookup
 void printDeserializeBuffer(unsigned long long, FILE*);
 void storeTree(Tree*, unsigned long long);
+void freeLinkedList(LinkedList*);
+void appendToLinkedList(LinkedList**, LinkedList*);
+void treeToLinkedList(Tree*, LinkedList*);
+void BSTInsert(Tree*, unsigned long long, unsigned long long);
+void linkedListToBST(Tree*, LinkedList*);
+void sortTree(Tree**);
 void printTree(Tree*, FILE*);
 void freeTree(Tree*);
-
+size_t lenTree(Tree*);
+size_t lenLinkedList(LinkedList*);
 
 int main(){
     FILE *fptr;
@@ -59,6 +72,7 @@ int main(){
     fclose(fptr);
 
     fptr = fopen("../output.txt", "w");
+    sortTree(&tree);
     printTree(tree, fptr);
     fclose(fptr);
 
@@ -162,14 +176,103 @@ void storeTree(Tree* tree, unsigned long long id){
 void printTree(Tree* tree, FILE* fptr){
     if(tree == NULL) return;
 
+    printTree(tree->left, fptr);
+
     if(tree->id != 1){
         fprintf(fptr, "ID: %llu | BUFF: ", tree->id);
         printDeserializeBuffer(tree->id, fptr);
         fprintf(fptr, " | VALUE: %llu\n", tree->value);
     }
 
-    if(tree->left != NULL) printTree(tree->left, fptr);
-    if(tree->right != NULL) printTree(tree->right, fptr);
+    printTree(tree->right, fptr);
+}
+
+void appendToLinkedList(LinkedList** list, LinkedList* element){
+    if(*list == NULL) *list = element;
+    else{
+        LinkedList* current = *list;
+
+        while(current->next != NULL){
+            current = current->next;
+        }
+
+        current->next = element;
+    }
+}
+
+void treeToLinkedList(Tree* tree, LinkedList* list){
+    if(tree == NULL) return;
+
+    LinkedList* next = malloc(sizeof(LinkedList));
+    next->value = tree->value;
+    next->id = tree->id;
+    next->next = NULL;
+
+    appendToLinkedList(&list, next);
+
+    treeToLinkedList(tree->left, list);
+    treeToLinkedList(tree->right, list);
+}
+
+void BSTInsert(Tree* tree, unsigned long long value, unsigned long long id){
+    if(value > tree->value){
+        if(tree->left == NULL){
+            Tree* new_tree = malloc(sizeof(Tree));
+            new_tree->value = value;
+            new_tree->id = id;
+            new_tree->left = NULL;
+            new_tree->right = NULL;
+            tree->left = new_tree;
+        } else{
+            BSTInsert(tree->left, value, id);
+        }
+    }else{
+        if(tree->right == NULL){
+            Tree* new_tree = malloc(sizeof(Tree));
+            new_tree->value = value;
+            new_tree->id = id;
+            new_tree->left = NULL;
+            new_tree->right = NULL;
+            tree->right = new_tree;
+        } else{
+            BSTInsert(tree->right, value, id);
+        }
+    }
+}
+
+void linkedListToBST(Tree* tree, LinkedList* linkedList){
+    LinkedList* last = linkedList;
+    int a = 1;
+    while(last != NULL){
+        BSTInsert(tree, last->value, last->id);
+        last = last->next;
+    }
+}
+
+void freeLinkedList(LinkedList* linkedList){
+    if(linkedList == NULL) return;
+    freeLinkedList(linkedList->next);
+    free(linkedList);
+}
+
+void sortTree(Tree** treeptr){
+    Tree* tree = *treeptr;
+    LinkedList* linkedList = malloc(sizeof(LinkedList));
+    linkedList->next = NULL;
+    linkedList->value = 0;
+    linkedList->id = 1;
+
+    treeToLinkedList(tree, linkedList);
+    freeTree(tree);
+    tree = malloc(sizeof(Tree));
+    tree->id = 1;
+    tree->value = 0;
+    tree->right = NULL;
+    tree->left = NULL;
+    linkedListToBST(tree, linkedList);
+
+    *treeptr = tree;
+    freeLinkedList(linkedList);
 }
 
 void freeTree(Tree* tree){
@@ -177,4 +280,21 @@ void freeTree(Tree* tree){
     if(tree->left != NULL) freeTree(tree->left);
     if(tree->right != NULL) freeTree(tree->right);
     free(tree);
+}
+
+size_t lenTree(Tree* tree){
+    if(tree == NULL) return 0;
+    return lenTree(tree->left) + lenTree(tree->right) + 1;
+}
+
+size_t lenLinkedList(LinkedList* linkedList){
+    size_t total = 0;
+    LinkedList* list = linkedList;
+
+    while(list != NULL) {
+        total += 1;
+        list = list->next;
+    }
+
+    return total;
 }
