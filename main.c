@@ -29,14 +29,14 @@ void freeTree(Tree*);
 
 int main(){
     FILE *fptr;
-    fptr = fopen("../test.txt", "r");
+    fptr = fopen("../words.txt", "r");
 
     if (!fptr) {
         printf("File Not Found!");
         return 1;
     }
 
-    const size_t WORD_LENGTH = 2;
+    const size_t WORD_LENGTH = 3;
     char ngram[WORD_LENGTH + 1];
     ngram[WORD_LENGTH] = '\0';
     Buffer b;
@@ -122,8 +122,6 @@ unsigned long long serializeBuffer(Buffer* buff){
 }
 
 void printDeserializeBuffer(unsigned long long id){
-    printf("deserialized: ");
-
     while(id > 0){
         char last_char = id % 27 - 1 + 'a';
         id /= 27; // integer division
