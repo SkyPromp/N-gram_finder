@@ -29,14 +29,14 @@ void freeTree(Tree*);
 
 int main(){
     FILE *fptr;
-    fptr = fopen("../words.txt", "r");
+    fptr = fopen("../test.txt", "r");
 
     if (!fptr) {
         printf("File Not Found!");
         return 1;
     }
 
-    const size_t WORD_LENGTH = 3;
+    const size_t WORD_LENGTH = 2;
     char ngram[WORD_LENGTH + 1];
     ngram[WORD_LENGTH] = '\0';
     Buffer b;
@@ -86,9 +86,10 @@ int readNext(Buffer* buff, FILE* fptr){
     char last_char;
     do{
         last_char = (char)fgetc(fptr);
+        if('A' <= last_char && last_char <= 'Z') last_char += 'a' - 'A';
         buffAdd(buff, last_char);
 
-        if(last_char == '\n') buffClear(buff);
+        if('a' > last_char || last_char > 'z') buffClear(buff);
     } while (last_char != EOF && buff->cp[0] == '\0');
 
     return last_char != EOF;
